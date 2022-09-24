@@ -64,6 +64,9 @@ namespace Ct.Interview.Web.Api.Middlewares
             if (ex is RecordNotFoundException)
                 return StatusCodes.Status404NotFound;
 
+            if (ex is ServiceUnavailableException)
+                return StatusCodes.Status503ServiceUnavailable;
+
             return StatusCodes.Status500InternalServerError;
         }
     }
