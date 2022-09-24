@@ -23,8 +23,7 @@ namespace Ct.Domain.Services
         private readonly AsyncRetryPolicy _retryPolicy;
         private readonly AsyncCircuitBreakerPolicy<HttpResponseMessage> _circuitBreakerPolicy;
         private readonly AsyncPolicyWrap<HttpResponseMessage> _resilientPolicy;
-        private readonly Random _randomDelay = new Random();
-        private readonly Random _random = new Random();
+        private readonly Random _randomDelay = new();
 
         public DownloadFileService(
             IAsxHttpClientFactory asxHttpClientFactory,
@@ -48,13 +47,7 @@ namespace Ct.Domain.Services
 
             var httpClient = _httpClientFactory.CreateClient();
 
-            using var response = await _resilientPolicy.ExecuteAsync(async () =>
-            {
-                if (_random.Next(1, 3) == 1)
-                    throw new HttpRequestException("This is a random exception");
-
-                return await httpClient.GetAsync(uri);
-            });
+            using var response = await _resilientPolicy.ExecuteAsync(async () => await httpClient.GetAsync(uri));
 
             response.EnsureSuccessStatusCode();
 
@@ -72,9 +65,9 @@ namespace Ct.Domain.Services
         private AsyncRetryPolicy CreateRetryPolicy()
         {
             return Policy.Handle<HttpRequestException>()
-                        .WaitAndRetryAsync(MaxRetries,
-                                retryCount => RetryDelay(retryCount),
-                                (_, timeSpan, retryCount, _) => OnRetry(timeSpan, retryCount));
+                         .WaitAndRetryAsync(MaxRetries,
+                                            retryCount => RetryDelay(retryCount),
+                                            (_, timeSpan, retryCount, _) => OnRetry(timeSpan, retryCount));
         }
 
         private void OnRetry(TimeSpan timeSpan, int retryCount) =>
