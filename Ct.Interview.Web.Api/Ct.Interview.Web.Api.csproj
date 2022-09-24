@@ -16,4 +16,9 @@
     <ProjectReference Include="..\Ct.Domain\Ct.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Ct.Web.Api.Tests" />
+  </ItemGroup>
+
+
 </Project>
