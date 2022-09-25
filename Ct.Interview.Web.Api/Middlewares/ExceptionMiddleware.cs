@@ -20,7 +20,8 @@ namespace Ct.Interview.Web.Api.Middlewares
             }
             catch (Exception ex)
             {
-                context.RequestServices.GetRequiredService<ILogger<ExceptionMiddleware>>().LogError(ex, "Error during request");
+                var logger = context.RequestServices.GetRequiredService<ILogger<ExceptionMiddleware>>();
+                logger.LogError(ex, "Request Error");
 
                 try
                 {
@@ -36,15 +37,14 @@ namespace Ct.Interview.Web.Api.Middlewares
 #if DEBUG
                     await context.Response.WriteAsync(json);
 #else
-                await context.Response.WriteAsync(GetFirstError(e));
+                    await context.Response.WriteAsync(GetFirstError(e));
 #endif
                     await context.Response.CompleteAsync();
                     return;
                 }
                 catch (Exception ex2)
                 {
-                    context.RequestServices.GetRequiredService<ILogger<ExceptionMiddleware>>()
-                                           .LogError(ex2, "Error while handling an exception");
+                    logger.LogError(ex2, "Error when serializing the exception to the response.");
                 }
                 throw;
             }
