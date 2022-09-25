@@ -40,6 +40,9 @@ namespace Ct.Domain.Parsers
 
                 var asxCompany = AsxListedCompany.CreateFrom(line);
 
+                if (asxCompany.IsEmpty)
+                    continue;
+
                 var isCompanyAddedToResult = result.TryAdd(asxCompany.AsxCode, new List<AsxListedCompany> { asxCompany });
 
                 if (!isCompanyAddedToResult)

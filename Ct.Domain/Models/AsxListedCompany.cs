@@ -30,7 +30,9 @@
                             .Select(Trim)
                             .ToList();
 
-            if (!values.Any())
+            var isEmptyValues = values.All(x => string.IsNullOrEmpty(x));
+
+            if (isEmptyValues)
                 return Empty;
 
             return new AsxListedCompany(values[0], values[1], values[2]);
@@ -38,7 +40,7 @@
 
         private static string Trim(string value)
         {
-            return value.TrimStart(ValueSymbol).TrimEnd(ValueSymbol);
+            return value.TrimStart(ValueSymbol).TrimEnd(ValueSymbol).Trim();
         }
     }
 }
