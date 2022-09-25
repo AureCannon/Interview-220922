@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ct.Domain.Services;
+using Ct.Interview.Web.Api.Contracts;
+using Ct.Interview.Web.Api.Mappers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ct.Interview.Web.Api.Controllers
 {
@@ -13,12 +16,14 @@ namespace Ct.Interview.Web.Api.Controllers
             _asxListedCompaniesService = asxListedCompaniesService;
         }
 
-        [HttpGet]
+        [HttpGet("{asxCode}")]
         public async Task<ActionResult<AsxListedCompanyResponse[]>> Get(string asxCode)
         {
-            var asxListedCompanies = await _asxListedCompaniesService.GetByAsxCode(asxCode);
+            var asxListedCompanies = await _asxListedCompaniesService.GetByAsxCodeAsync(asxCode);
 
-            return Ok(asxListedCompanies);
+            var response = asxListedCompanies.Select(AsxListedCompaniesMapper.ToDto);
+
+            return base.Ok(response);
         }
     }
 }
